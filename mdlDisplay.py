@@ -1,3 +1,4 @@
+from gfxhat import lcd, fonts
 from PIL import Image, ImageFont, ImageDraw
 import mdlIcon
 
