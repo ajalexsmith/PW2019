@@ -41,8 +41,14 @@ class Menu:
         self.gfx.image = image
         self.gfx.display()
 
+    def Run(self):
+        print("Add run code here")
+
     '''
     
     Process commands
     
     '''
+
+menu = Menu()
+menu.Run()
