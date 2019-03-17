@@ -4,11 +4,10 @@ import mdlDisplay, clsSettings
 
 class clsGFX:
     def __init__(self):
-        self.r = clsSettings.r
-        self.g = clsSettings.g
-        self.b = clsSettings.b
-        self.image = None
         self.settings = clsSettings.Settings()
+        self.image = None
+        self.backlightSet()
+
 
     def display(self):
         if self.image != None:
@@ -20,13 +19,12 @@ class clsGFX:
             lcd.show()
 
     def backlightSet(self):
-        for x in range(6):
-            backlight.set_pixels(x, self.settings.r, self.settings.g, self.settings.b)
+        backlight.set_all(self.settings.blR, self.settings.blG, self.settings.blB)
         backlight.show()
 
     def off(self):
         for x in range(6):
-            backlight.set_pixel(x, 0, 0, 0)
+            backlight.set_all(0, 0, 0)
             touch.set_led(x, 0)
         backlight.show()
         lcd.clear()

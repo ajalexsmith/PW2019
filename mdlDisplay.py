@@ -12,6 +12,21 @@ def rotateImage(image, angle): #Rotates Image desired angle
     image = image.rotate(angle)
     return image
 
+def displaySetup(image):
+    draw = ImageDraw.Draw(image)
+
+    draw.rectangle([(0, 5), (127, 5)], 0, 1)
+
+    return image
+
+def creatImage():
+    width, height = lcd.dimensions()
+    image = Image.new('P', (width, height))
+
+    image = displaySetup(image)
+
+    return image
+
 def addMenuText(image, text): # Adds text to menu
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype(fonts.PressStart2P, 10)
@@ -29,11 +44,38 @@ def addMenuText(image, text): # Adds text to menu
 Preflight
 '''
 
+def TB(connencted, image, controller):
+    draw = ImageDraw.Draw(image)
+
+    x = 0 + (controller * 20) - 20
+
+    draw.point(mdlIcon.TB(x,0,controller), 1)
+
+
+    if connencted == True:
+        draw.point(mdlIcon.smallTick((12 + x),0), 1)
+    else:
+        draw.point(mdlIcon.smallCross((12 + x),0), 1)
+
+    return image
+
+
+def Controller(connencted, image):
+    draw = ImageDraw.Draw(image)
+
+    draw.point(mdlIcon.smallCont(116,0), 1)
+
+    if connencted == True:
+        draw.point(mdlIcon.smallTick(123, 0), 1)
+    else:
+        draw.point(mdlIcon.smallCross(124,0), 1)
+    return image
+
+
 def PreFlight():
-    image = mdlPil.creatImage()
+    image = creatImage()
     image = ControllerCheck(image)
     image = TBCheck(image)
-    mdlGFX.gfxDisplay(image)
 
     return image
 
@@ -43,9 +85,9 @@ def ControllerCheck(image):
     stdoutdata = sp.getoutput("hcitool con")
 
     if "00:06:F7:13:66:8F" in stdoutdata.split():
-        image = mdlPil.Controller(True, image)
+        image = Controller(True, image)
     else:
-        image = mdlPil.Controller(False, image)
+        image = Controller(False, image)
 
     return image
 
@@ -53,12 +95,12 @@ def TBCheck(image):
     TB1 = ThunderBorg.ThunderBorg()
     TB1.i2cAddress = 10
     TB1.Init()
-    image = mdlPil.TB(TB1.foundChip, image, 1)
+    image = TB(TB1.foundChip, image, 1)
 
     TB2 = ThunderBorg.ThunderBorg()
     TB2.i2cAddress = 11
     TB2.Init()
-    image = mdlPil.TB(TB1.foundChip, image, 2)
+    image = TB(TB1.foundChip, image, 2)
     return image
 
 

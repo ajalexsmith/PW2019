@@ -10,9 +10,9 @@ class Settings:
         nebYel = str(SettingsFile.readline())
         nebGre = str(SettingsFile.readline())
 
-        self.blR = r.replace('\n', '')
-        self.blG = g.replace('\n', '')
-        self.blB = b.replace('\n', '')
+        self.blR = int(r.replace('\n', ''))
+        self.blG = int(g.replace('\n', ''))
+        self.blB = int(b.replace('\n', ''))
         self.nebRed = nebRed.replace('\n', '')
         self.nebBlue = nebBlu.replace('\n', '')
         self.nebYellow = nebYel.replace('\n', '')
