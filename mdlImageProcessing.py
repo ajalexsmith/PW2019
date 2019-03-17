@@ -1,5 +1,30 @@
 import sys, clsDrive
+import threading
 
+class TestThread(threading.Thread):
+
+    def __init__(self, name='TestThread'):
+        """ constructor, setting initial variables """
+        self._stopevent = threading.Event(  )
+        self._sleepperiod = 1.0
+
+        threading.Thread.__init__(self, name=name)
+
+    def run(self):
+        """ main control loop """
+        print("%s starts" % (self.getName(  ),))
+
+        count = 0
+        while not self._stopevent.isSet(  ):
+            count += 1
+            print("loop %d" % (count,))
+
+        print("%s ends" % (self.getName(  ),))
+
+    def join(self, timeout=None):
+        """ Stop the thread. """
+        self._stopevent.set(  )
+        threading.Thread.join(self, timeout)
 
 sys.path.insert(0, 'pixy2/build/python_demos')
 import pixy
@@ -33,7 +58,7 @@ class IntersectionLine(Structure):
         ("m_reserved", c_uint),
         ("m_angle", c_uint)]
 
-def lineFollow:
+def lineFollow():
     drive = clsDrive.Drive()
     control = clsDrive.Control()
     pixy.init()

@@ -1,4 +1,4 @@
-import clsGFX, mdlDisplay
+import clsGFX, mdlDisplay, mdlImageProcessing
 from gfxhat import touch, lcd, backlight
 import signal
 class Menu:
@@ -10,7 +10,7 @@ class Menu:
 
     def __init__(self):
         self.options = [
-            [mdlDisplay.blastOff, self.test],
+            [mdlDisplay.blastOff, mdlImageProcessing.TestThread],
             [mdlDisplay.hubble, self.test],
             [mdlDisplay.SpaceInvaders, self.test],
             [mdlDisplay.PiNoon, self.test],
@@ -24,6 +24,7 @@ class Menu:
         self.curPos = 0
         self.gfx = clsGFX.clsGFX()
         self.InProgram = False
+        self.curThread = None
 
     def nextOption(self):
         if self.curPos == len(self.options):
@@ -47,7 +48,9 @@ class Menu:
         self.gfx.display()
 
     def test(self):
-        print("Test")
+        global testthread
+        testthread.start()
+
     '''
     
     Process commands
@@ -65,7 +68,10 @@ def handler(ch, event):
         elif ch == 5:
             menu.prevOption()
         elif ch == 4:
-            print("Start")
+            menu.curThread = menu.options[menu.curPos][1]()
+            menu.curThread.start()
+        elif ch == 0:
+            menu.curThread.join()
         touch.set_led(ch, 0)
         print(str(menu.curPos))
 
