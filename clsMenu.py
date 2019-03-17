@@ -14,7 +14,7 @@ class Menu:
             [mdlDisplay.hubble, self.test],
             [mdlDisplay.SpaceInvaders, self.test],
             [mdlDisplay.PiNoon, self.test],
-            [mdlDisplay.COM, self.test],
+            [mdlDisplay.COM, mdlImageProcessing.Maze],
             [mdlDisplay.SOC, self.test],
             [mdlDisplay.drive, self.test],
             [mdlDisplay.settings, self.test],
@@ -25,6 +25,7 @@ class Menu:
         self.gfx = clsGFX.clsGFX()
         self.InProgram = False
         self.curThread = None
+        self.inThread = False
 
     def nextOption(self):
         if self.curPos == len(self.options):
@@ -63,15 +64,17 @@ def handler(ch, event):
     global menu
     if event == 'press':
         touch.set_led(ch, 1)
-        if ch == 3:
+        if ch == 3 and menu.inThread == False:
             menu.nextOption()
-        elif ch == 5:
+        elif ch == 5 and menu.inThread == False:
             menu.prevOption()
-        elif ch == 4:
+        elif ch == 4 and menu.inThread == False:
+            menu.inThread = True
             menu.curThread = menu.options[menu.curPos][1]()
             menu.curThread.start()
-        elif ch == 0:
+        elif ch == 0 and menu.inThread == True:
             menu.curThread.join()
+            menu.inThread = False
         touch.set_led(ch, 0)
         print(str(menu.curPos))
 

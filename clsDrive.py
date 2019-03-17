@@ -95,7 +95,6 @@ class Control():
         self.distFromCenter = 0
         self.progress = 0
         self.TOF = VL53L1X.VL53L1X(i2c_bus=1, i2c_address=0x29)
-        self.distance
 
     def calcControl(self, x, y):
         if abs(x) < 0.2 and abs(y) < 0.2:

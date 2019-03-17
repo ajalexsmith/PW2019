@@ -80,28 +80,35 @@ def lineFollow():
             for index in range(0, v_count):
                 control.LineFollow(vectors[index].m_x0, vectors[index].m_y0, vectors[index].m_x1, vectors[index].m_y1)
 
-def Maze():
-    drive = clsDrive.Drive()
-    control = clsDrive.Control()
-    point = 0
-    pixy.init()
-    pixy.change_prog("color_connected_components");
-    blocks = BlockArray(100)
-    while 1:
-        count = pixy.ccc_get_blocks(100, blocks)
 
-        if count > 0:
-            print
-            'frame %3d:' % (frame)
-            frame = frame + 1
-            for index in range(0, count):
-                curBlock = blocks[index]
-                if curBlock.m_signature == 1:
-                    con
+class Maze(threading.Thread):
 
+    def __init__(self, name='TestThread'):
+        """ constructor, setting initial variables """
+        self._stopevent = threading.Event(  )
+        self._sleepperiod = 1.0
 
+        threading.Thread.__init__(self, name=name)
 
-                print
-                '[BLOCK: SIG=%d X=%3d Y=%3d WIDTH=%3d HEIGHT=%3d]' % (
-                blocks[index].m_signature, blocks[index].m_x, blocks[index].m_y, blocks[index].m_width,
-                blocks[index].m_height)
+    def run(self):
+        drive = clsDrive.Drive()
+        control = clsDrive.Control()
+        point = 0
+        pixy.init()
+        pixy.change_prog("color_connected_components");
+        pixy.set_lamp(1, 0)
+        blocks = BlockArray(100)
+        while not self._stopevent.isSet(  ):
+            count = pixy.ccc_get_blocks(100, blocks)
+            if count > 0:
+                for index in range(0, count):
+                    curBlock = blocks[index]
+                    if curBlock.m_signature == 1:
+                        print('[BLOCK: SIG=%d X=%3d Y=%3d WIDTH=%3d HEIGHT=%3d]' % (
+                        blocks[index].m_signature, blocks[index].m_x, blocks[index].m_y, blocks[index].m_width,
+                        blocks[index].m_height))
+    def join(self, timeout=None):
+        """ Stop the thread. """
+        self._stopevent.set(  )
+        pixy.set_lamp(0, 0)
+        threading.Thread.join(self, timeout)
