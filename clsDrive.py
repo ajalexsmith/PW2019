@@ -43,26 +43,26 @@ class Drive():
         self.drive()
 
     def joltLeft(self):
-        self.m1 = -1
-        self.m2 = -1
-        self.m3 = -1
+        self.m1 = -0.5
+        self.m2 = -0.5
+        self.m3 = -0.5
         self.drive()
-        time.sleep(0.25)
+        time.sleep(0.08)
         self.stop()
 
     def joltRight(self):
-        self.m1 = 1
-        self.m2 = 1
-        self.m3 = 1
+        self.m1 = 0.5
+        self.m2 = 0.5
+        self.m3 = 0.5
         self.drive()
-        time.sleep(0.25)
+        time.sleep(0.08)
         self.stop()
 
     def HarDrive(self, controlMeth):
         if controlMeth.stop:
             self.stop()
         else:
-            print("Drive")
+            #print("Drive")
             self.speed = controlMeth.speed
             val = 0.0166666666667
             if controlMeth.angle >= 0 and controlMeth.angle < 60:
@@ -106,6 +106,7 @@ class Control():
         self.distFromCenter = 0
         self.progress = 0
         self.TOF = VL53L1X.VL53L1X(i2c_bus=1, i2c_address=0x29)
+        self.TOF.open()
         self.distance = 1000
 
     def calcControl(self, x, y):
@@ -151,15 +152,14 @@ class Control():
         self.distFromCenter = abs(39 - x1)
 
     def DriveToTarget(self, x, y):
+        drive = Drive()
         dist = 158 - x
         if abs(dist) > 50:
             self.stop = True
             if dist > 50:
-                # Drive.joltLeft()
-                print("JoltLeft")
+                drive.joltLeft()
             else:
-                # Drive.joltRight()
-                print("JoltRight")
+                drive.joltRight()
         else:
             self.stop = False
             if dist > 25:
@@ -174,6 +174,14 @@ class Control():
                 self.angle = 0
             self.speed = 1
 
+    def neb(self, x, y):
+        self.distance = self.TOF.get_distance()
+        print(str(self.distance))
+        if self.distance >= 100:
+            self.stop = False
+            self.DriveToTarget(x, y)
+        else:
+            self.stop = True
 
 
     def maze(self, x, y):
@@ -188,10 +196,9 @@ class Control():
         90 ACW
         FORWARD TILL  TARGET
         '''
-        #self.TOF.open()
-        #self.TOF.start_ranging(1)
-        #self.distance = self.TOF.get_distance()
-        #self.TOF.stop_ranging()
+
+        self.distance = self.TOF.get_distance()
+        self.TOF.stop_ranging()
 
         if self.progress == 0 or self.progress == 1 or self.progress == 3 or self.progress == 5 or self.progress == 6:
             if self.distance < 50:
@@ -202,8 +209,8 @@ class Control():
                     self.stop = True
                 else:
                     self.stop = True
-                s
-                elf.progress += 1
+
+                self.progress += 1
 
             self.DriveToTarget(x, y)
         elif self.progress == 2 or self.progress == 7:

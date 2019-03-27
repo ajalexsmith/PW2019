@@ -1,4 +1,4 @@
-import clsGFX, mdlDisplay, mdlImageProcessing
+import clsGFX, mdlDisplay, mdlImageProcessing, clsDrive
 import mdlControl
 from gfxhat import touch, lcd, backlight
 import signal
@@ -12,7 +12,7 @@ class Menu:
     def __init__(self):
         self.options = [
             [mdlDisplay.blastOff, mdlImageProcessing.TestThread],
-            [mdlDisplay.hubble, self.test],
+            [mdlDisplay.hubble, mdlImageProcessing.Nebula],
             [mdlDisplay.SpaceInvaders, self.test],
             [mdlDisplay.PiNoon, self.test],
             [mdlDisplay.COM, mdlImageProcessing.Maze],
@@ -89,4 +89,6 @@ except KeyboardInterrupt:
         touch.set_led(x, 0)
     backlight.show()
     lcd.clear()
+    drive = clsDrive.Drive()
+    drive.stop()
     lcd.show()

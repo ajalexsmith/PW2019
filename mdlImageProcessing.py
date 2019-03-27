@@ -1,4 +1,5 @@
 import sys, clsDrive
+from time import sleep
 import threading
 
 class TestThread(threading.Thread):
@@ -112,4 +113,41 @@ class Maze(threading.Thread):
         """ Stop the thread. """
         self._stopevent.set(  )
         pixy.set_lamp(0, 0)
+        threading.Thread.join(self, timeout)
+
+class Nebula(threading.Thread):
+
+    def __init__(self, name='TestThread'):
+        """ constructor, setting initial variables """
+        self._stopevent = threading.Event(  )
+        self._sleepperiod = 1.0
+
+        threading.Thread.__init__(self, name=name)
+
+    def run(self):
+        pixy.init()
+        pixy.change_prog("color_connected_components");
+        pixy.set_lamp(1, 0)
+        drive = clsDrive.Drive()
+        control = clsDrive.Control()
+        blocks = BlockArray(100)
+        while not self._stopevent.isSet(  ):
+            count = pixy.ccc_get_blocks(100, blocks)
+            if count > 0:
+                for index in range(0, count):
+                    curBlock = blocks[index]
+                    print("x " + str(curBlock.m_x) + "- y " + str(curBlock.m_y))
+                    #control.neb(curBlock.m_x, curBlock.m_y)
+                    #control.speed = 0.5
+                    #drive.HarDrive(control)
+            else:
+                #drive.joltLeft()
+                print("Jolt")
+
+    def join(self, timeout=None):
+        """ Stop the thread. """
+        self._stopevent.set(  )
+        pixy.set_lamp(0, 0)
+        drive = clsDrive.Drive()
+        drive.stop()
         threading.Thread.join(self, timeout)
