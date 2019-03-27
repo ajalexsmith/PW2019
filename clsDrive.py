@@ -141,15 +141,16 @@ class Control():
                 self.stop = True
 
     def lineFollow(self, x1, y1, x2, y2):
-        self.calcControl((x1-x2), (y1-y2))
+        drive = Drive()
         if x1 <= 24:
-            self.frame = 0
+            drive.joltRight()
         elif x1 >= 53:
-            self.frame = 2
+            drive.joltRight()
         else:
-            self.frame = 1
-
-        self.distFromCenter = abs(39 - x1)
+            drive.m1 = 0.5
+            drive.m2 = 0.5
+            drive.m3 = 0
+            drive.driveWithSpeed()
 
     def DriveToTarget(self, x, y):
         drive = Drive()

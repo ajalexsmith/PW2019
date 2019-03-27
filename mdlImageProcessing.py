@@ -82,6 +82,42 @@ def lineFollow():
                 control.LineFollow(vectors[index].m_x0, vectors[index].m_y0, vectors[index].m_x1, vectors[index].m_y1)
 
 
+class LineFollow(threading.Thread):
+
+    def __init__(self, name='TestThread'):
+        """ constructor, setting initial variables """
+        self._stopevent = threading.Event(  )
+        self._sleepperiod = 1.0
+
+        threading.Thread.__init__(self, name=name)
+
+    def run(self):
+        drive = clsDrive.Drive()
+        control = clsDrive.Control()
+        pixy.set_servos(500, 1000)
+        pixy.set_lamp(1, 0)
+        line_get_all_features()
+        i_count = line_get_intersections(100, intersections)
+        v_count = line_get_vectors(100, vectors)
+
+        if i_count > 0 or v_count > 0:
+            # print('frame %3d:' % (frame))
+            for index in range(0, v_count):
+                control.LineFollow(vectors[index].m_x0, vectors[index].m_y0, vectors[index].m_x1, vectors[index].m_y1)
+        else:
+            drive.joltLeft()
+
+
+    def join(self, timeout=None):
+        """ Stop the thread. """
+        self._stopevent.set(  )
+        pixy.set_lamp(0, 0)
+        pixy.set_servos(500, 500)
+        threading.Thread.join(self, timeout)
+        vectors = VectorArray(100)
+        while not self._stopevent.isSet():
+
+
 class Maze(threading.Thread):
 
     def __init__(self, name='TestThread'):
