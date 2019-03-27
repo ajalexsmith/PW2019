@@ -1,3 +1,6 @@
+import sys, clsDrive
+import threading
+
 class Settings:
     def __init__(self):
         SettingsFile = open("Settings.txt", "r")

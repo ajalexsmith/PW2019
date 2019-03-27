@@ -104,9 +104,10 @@ class Maze(threading.Thread):
                 for index in range(0, count):
                     curBlock = blocks[index]
                     if curBlock.m_signature == 1:
-                        print('[BLOCK: SIG=%d X=%3d Y=%3d WIDTH=%3d HEIGHT=%3d]' % (
-                        blocks[index].m_signature, blocks[index].m_x, blocks[index].m_y, blocks[index].m_width,
-                        blocks[index].m_height))
+                        control.maze(curBlock.m_x, curBlock.m_y)
+                        if control.stop == False:
+                            print(control.angle)
+
     def join(self, timeout=None):
         """ Stop the thread. """
         self._stopevent.set(  )

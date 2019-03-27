@@ -93,11 +93,13 @@ def ControllerCheck(image):
 
 def TBCheck(image):
     TB1 = ThunderBorg.ThunderBorg()
+    TB1.printFunction = TB1.NoPrint
     TB1.i2cAddress = 10
     TB1.Init()
     image = TB(TB1.foundChip, image, 1)
 
     TB2 = ThunderBorg.ThunderBorg()
+    TB2.printFunction = TB2.NoPrint
     TB2.i2cAddress = 11
     TB2.Init()
     image = TB(TB1.foundChip, image, 2)

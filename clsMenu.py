@@ -1,4 +1,5 @@
 import clsGFX, mdlDisplay, mdlImageProcessing
+import mdlControl
 from gfxhat import touch, lcd, backlight
 import signal
 class Menu:
@@ -16,7 +17,7 @@ class Menu:
             [mdlDisplay.PiNoon, self.test],
             [mdlDisplay.COM, mdlImageProcessing.Maze],
             [mdlDisplay.SOC, self.test],
-            [mdlDisplay.drive, self.test],
+            [mdlDisplay.drive, mdlControl.Drive],
             [mdlDisplay.settings, self.test],
             [mdlDisplay.poweroff, self.test],
             [mdlDisplay.reboot, self.test]
