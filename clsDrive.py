@@ -47,7 +47,15 @@ class Drive():
         self.m2 = -0.5
         self.m3 = -0.5
         self.drive()
-        time.sleep(0.08)
+        time.sleep(0.01)
+        self.stop()
+
+    def turnLeft(self):
+        self.m1 = -0.5
+        self.m2 = -0.5
+        self.m3 = -0.5
+        self.drive()
+        time.sleep(0.44)
         self.stop()
 
     def joltRight(self):
@@ -55,7 +63,7 @@ class Drive():
         self.m2 = 0.5
         self.m3 = 0.5
         self.drive()
-        time.sleep(0.08)
+        time.sleep(0.01)
         self.stop()
 
     def HarDrive(self, controlMeth):
@@ -106,8 +114,8 @@ class Control():
         self.distFromCenter = 0
         self.progress = 0
         self.TOF = VL53L1X.VL53L1X(i2c_bus=1, i2c_address=0x29)
-        self.TOF.open()
-        self.distance = 1000
+        #self.TOF.open()
+        #self.distance = 1000
 
     def calcControl(self, x, y):
         if abs(x) < 0.2 and abs(y) < 0.2:
@@ -141,16 +149,15 @@ class Control():
                 self.stop = True
 
     def lineFollow(self, x1, y1, x2, y2):
-        drive = Drive()
+
         if x1 <= 24:
-            drive.joltRight()
+            #drive.joltRight()
+            self.frame = 0
         elif x1 >= 53:
-            drive.joltRight()
+            # drive.joltLeft()
+            self.frame = 2
         else:
-            drive.m1 = 0.5
-            drive.m2 = 0.5
-            drive.m3 = 0
-            drive.driveWithSpeed()
+            self.frame = 1
 
     def DriveToTarget(self, x, y):
         drive = Drive()
@@ -185,7 +192,26 @@ class Control():
             self.stop = True
 
 
-    def maze(self, x, y):
+    def maze(self, x, y, width):
+        if x <= 125:
+            self.frame = 0
+        elif x >= 189:
+            self.frame = 2
+        else:
+            self.frame = 1
+        if width > 105:
+            self.stop = True
+            print("Stop")
+        else:
+            self.stop = False
+
+
+            #315 157
+
+
+        print(str(width))
+
+
         '''
         forward
         turn 90 degrees ACW
@@ -196,7 +222,7 @@ class Control():
         forward till target
         90 ACW
         FORWARD TILL  TARGET
-        '''
+
 
         self.distance = self.TOF.get_distance()
         self.TOF.stop_ranging()
@@ -264,7 +290,7 @@ class Control():
         else:
             print("Stop")
 
-
+'''
 
 
 

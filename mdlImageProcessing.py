@@ -58,7 +58,7 @@ class IntersectionLine(Structure):
         ("m_index", c_uint),
         ("m_reserved", c_uint),
         ("m_angle", c_uint)]
-
+'''
 def lineFollow():
     drive = clsDrive.Drive()
     control = clsDrive.Control()
@@ -80,7 +80,7 @@ def lineFollow():
             frame = frame + 1
             for index in range(0, v_count):
                 control.LineFollow(vectors[index].m_x0, vectors[index].m_y0, vectors[index].m_x1, vectors[index].m_y1)
-
+'''
 
 class LineFollow(threading.Thread):
 
@@ -94,18 +94,37 @@ class LineFollow(threading.Thread):
     def run(self):
         drive = clsDrive.Drive()
         control = clsDrive.Control()
-        pixy.set_servos(500, 1000)
-        pixy.set_lamp(1, 0)
-        line_get_all_features()
-        i_count = line_get_intersections(100, intersections)
-        v_count = line_get_vectors(100, vectors)
+        pixy.init()
+        pixy.change_prog("line")
 
-        if i_count > 0 or v_count > 0:
-            # print('frame %3d:' % (frame))
-            for index in range(0, v_count):
-                control.LineFollow(vectors[index].m_x0, vectors[index].m_y0, vectors[index].m_x1, vectors[index].m_y1)
-        else:
-            drive.joltLeft()
+        pixy.set_servos(500, 800)
+        pixy.set_lamp(1, 0)
+
+        vectors = VectorArray(100)
+        intersections = IntersectionLineArray(100)
+
+        while not self._stopevent.isSet():
+            line_get_all_features()
+            i_count = line_get_intersections(100, intersections)
+            v_count = line_get_vectors(100, vectors)
+            print("Scanning")
+            if i_count > 0 or v_count > 0:
+                # print('frame %3d:' % (frame))
+                for index in range(0, v_count):
+                    control.lineFollow(vectors[index].m_x0, vectors[index].m_y0, vectors[index].m_x1, vectors[index].m_y1)
+                    print(str(control.frame))
+                    if control.frame == 2:
+                        drive.joltRight()
+                    elif control.frame == 0:
+                        drive.joltLeft()
+                    else:
+                        control.angle = 0
+                        control.speed = 1
+                        control.stop = False
+                        drive.HarDrive(control)
+            else:
+                print("unable to find line")#drive.joltLeft()
+                drive.stop()
 
 
     def join(self, timeout=None):
@@ -114,8 +133,8 @@ class LineFollow(threading.Thread):
         pixy.set_lamp(0, 0)
         pixy.set_servos(500, 500)
         threading.Thread.join(self, timeout)
-        vectors = VectorArray(100)
-        while not self._stopevent.isSet():
+        drive = clsDrive.Drive()
+        drive.stop()
 
 
 class Maze(threading.Thread):
@@ -133,7 +152,8 @@ class Maze(threading.Thread):
         point = 0
         pixy.init()
         pixy.change_prog("color_connected_components");
-        pixy.set_lamp(1, 0)
+        pixy.set_lamp(0, 0)
+        pixy.set_servos(500, 650)
         blocks = BlockArray(100)
         while not self._stopevent.isSet(  ):
             count = pixy.ccc_get_blocks(100, blocks)
@@ -141,15 +161,36 @@ class Maze(threading.Thread):
                 for index in range(0, count):
                     curBlock = blocks[index]
                     if curBlock.m_signature == 1:
-                        control.maze(curBlock.m_x, curBlock.m_y)
-                        if control.stop == False:
-                            print(control.angle)
+                        control.maze(curBlock.m_x, curBlock.m_y, curBlock.m_width)
+                        if control.stop == True:
+                            drive.turnLeft()
+                            print("Done")
+                            #sleep(60)
+
+                            break
+                        elif control.frame == 2:
+                            drive.joltRight()
+                        elif control.frame == 0:
+                            drive.joltLeft()
+                        else:
+                            control.angle = 0
+                            control.speed = 0.5
+                            control.stop = False
+                            drive.HarDrive(control)
+            else:
+                control.angle = 0
+                control.speed = 0.3
+                control.stop = False
+                drive.HarDrive(control)
 
     def join(self, timeout=None):
         """ Stop the thread. """
         self._stopevent.set(  )
         pixy.set_lamp(0, 0)
+        pixy.set_servos(500, 500)
         threading.Thread.join(self, timeout)
+        drive = clsDrive.Drive()
+        drive.stop()
 
 class Nebula(threading.Thread):
 

@@ -11,7 +11,7 @@ class Menu:
 
     def __init__(self):
         self.options = [
-            [mdlDisplay.blastOff, mdlImageProcessing.lineFollow],
+            [mdlDisplay.blastOff, mdlImageProcessing.LineFollow],
             [mdlDisplay.hubble, mdlImageProcessing.Nebula],
             [mdlDisplay.SpaceInvaders, self.test],
             [mdlDisplay.PiNoon, self.test],
