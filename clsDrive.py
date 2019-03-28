@@ -58,6 +58,14 @@ class Drive():
         time.sleep(0.44)
         self.stop()
 
+    def turnRight(self):
+        self.m1 = -0.5
+        self.m2 = -0.5
+        self.m3 = -0.5
+        self.drive()
+        time.sleep(0.44)
+        self.stop()
+
     def joltRight(self):
         self.m1 = 0.5
         self.m2 = 0.5

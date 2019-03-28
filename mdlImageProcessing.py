@@ -158,25 +158,39 @@ class Maze(threading.Thread):
         while not self._stopevent.isSet(  ):
             count = pixy.ccc_get_blocks(100, blocks)
             if count > 0:
+                x = 0
+                y = 0
+                area = 0
+                width = 0
+
                 for index in range(0, count):
                     curBlock = blocks[index]
-                    if curBlock.m_signature == 1:
-                        control.maze(curBlock.m_x, curBlock.m_y, curBlock.m_width)
-                        if control.stop == True:
+                    if curBlock.m_signature == 1 and (curBlock.m_width * curBlock.m_height) > area:
+                        area = (curBlock.m_width * curBlock.m_height)
+                        width = curBlock.m_width
+                        x = curBlock.m_x
+                        y = curBlock.m_y
+                if area > 0:
+                    control.maze(x, y, width)
+                    if control.stop == True:
+                        if control.progress == 0 or control.progress == 1 or control.progress == 4 or control.progress == 5 or control.progress == 6:
                             drive.turnLeft()
-                            print("Done")
-                            #sleep(60)
-
-                            break
-                        elif control.frame == 2:
-                            drive.joltRight()
-                        elif control.frame == 0:
-                            drive.joltLeft()
-                        else:
-                            control.angle = 0
-                            control.speed = 0.5
-                            control.stop = False
-                            drive.HarDrive(control)
+                        elif control.progress == 2 or control.progress == 3 or control.progress == 7:
+                            drive.turnRight()
+                    elif control.frame == 2:
+                        drive.joltRight()
+                    elif control.frame == 0:
+                        drive.joltLeft()
+                    else:
+                        control.angle = 0
+                        control.speed = 0.5
+                        control.stop = False
+                        drive.HarDrive(control)
+                else:
+                    control.angle = 0
+                    control.speed = 0.3
+                    control.stop = False
+                    drive.HarDrive(control)
             else:
                 control.angle = 0
                 control.speed = 0.3
