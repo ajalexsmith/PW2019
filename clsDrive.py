@@ -55,15 +55,15 @@ class Drive():
         self.m2 = -0.5
         self.m3 = -0.5
         self.drive()
-        time.sleep(0.44)
+        time.sleep(0.45)
         self.stop()
 
     def turnRight(self):
-        self.m1 = -0.5
-        self.m2 = -0.5
-        self.m3 = -0.5
+        self.m1 = 0.5
+        self.m2 = 0.5
+        self.m3 = 0.5
         self.drive()
-        time.sleep(0.44)
+        time.sleep(0.5)
         self.stop()
 
     def joltRight(self):
@@ -201,9 +201,9 @@ class Control():
 
 
     def maze(self, x, y, width):
-        if x <= 125:
+        if x <= 125: #125:
             self.frame = 0
-        elif x >= 189:
+        elif x >= 189: # 189
             self.frame = 2
         else:
             self.frame = 1
