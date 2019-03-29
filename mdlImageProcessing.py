@@ -1,7 +1,7 @@
 import sys, clsDrive
 from time import sleep
 import threading
-
+import VL53L1X
 class TestThread(threading.Thread):
 
     def __init__(self, name='TestThread'):
@@ -215,7 +215,7 @@ class Nebula(threading.Thread):
         threading.Thread.__init__(self, name=name)
 
     def run(self):
-        pixy.init()
+        '''pixy.init()
         pixy.change_prog("color_connected_components");
         pixy.set_lamp(1, 0)
         drive = clsDrive.Drive()
@@ -233,6 +233,63 @@ class Nebula(threading.Thread):
             else:
                 #drive.joltLeft()
                 print("Jolt")
+        '''
+
+        tof = VL53L1X.VL53L1X(i2c_bus=1, i2c_address=0x29)
+        tof.open()  # Initialise the i2c bus and configure the sensor
+        tof.start_ranging(1)  # Start ranging, 1 = Short Range, 2 = Medium Range, 3 = Long Range
+
+        drive = clsDrive.Drive()
+        control = clsDrive.Control()
+        control.progress = 2
+        pixy.init()
+        pixy.change_prog("color_connected_components");
+        pixy.set_lamp(0, 0)
+        pixy.set_servos(500, 650)
+        blocks = BlockArray(100)
+        while not self._stopevent.isSet():
+            count = pixy.ccc_get_blocks(100, blocks)
+            if count > 0 and self.progress < 6:
+                x = 0
+                y = 0
+                width = 0
+
+                for index in range(0, count):
+                    curBlock = blocks[index]
+                    if curBlock.m_signature == control.progress and curBlock.m_width > width:
+                        width = curBlock.m_width
+                        x = curBlock.m_x
+                        y = curBlock.m_y
+                if width > 0:
+                    if tof.get_distance() < 70:
+                        control.angle = 180
+                        control.speed = 0.5
+                        control.stop = False
+                        drive.HarDrive(control)
+                        sleep(1.5)
+                        drive.stop()
+                        control.progress += 1
+                    else:
+                        control.neb(x, y)
+                        if control.frame == 2:
+                            drive.joltRight()
+                        elif control.frame == 0:
+                            drive.joltLeft()
+                        else:
+                            control.angle = 0
+                            control.speed = 0.5
+                            control.stop = False
+                            drive.HarDrive(control)
+                else:
+                    drive.joltLeft()
+            elif control.progress == 6:
+                drive.stop()
+                break
+            else:
+                drive.joltLeft()
+
+
+
 
     def join(self, timeout=None):
         """ Stop the thread. """
