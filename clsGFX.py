@@ -10,13 +10,20 @@ class clsGFX:
 
 
     def display(self):
-        if self.image != None:
-            newImage = mdlDisplay.rotateImage(self.image, 180)
-            for x in range(128):
-                for y in range(64):
-                    pixel = newImage.getpixel((x, y))
-                    lcd.set_pixel(x, y, pixel)
-            lcd.show()
+        done = False
+        while done == False:
+            try:
+                if self.image != None:
+                    newImage = mdlDisplay.rotateImage(self.image, 180)
+                    for x in range(128):
+                        for y in range(64):
+                            pixel = newImage.getpixel((x, y))
+                            lcd.set_pixel(x, y, pixel)
+                    lcd.show()
+                done = True
+            except:
+                done = False
+
 
     def backlightSet(self):
         backlight.set_all(self.settings.blR, self.settings.blG, self.settings.blB)

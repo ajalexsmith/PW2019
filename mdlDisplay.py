@@ -137,6 +137,13 @@ def PiNoon(image):
     addMenuText(image, "PiNoon")
     return image
 
+def testTurn(image):
+    draw = ImageDraw.Draw(image)
+
+    draw.point(mdlIcon.settings(), 1)
+    addMenuText(image, "Turn Test")
+    return image
+
 def COM(image):
     draw = ImageDraw.Draw(image)
     draw.point(mdlIcon.com(), 1)
@@ -169,10 +176,10 @@ def drive(image):
 
     return image
 
-def settings(image):
+def LED(image):
     draw = ImageDraw.Draw(image)
-    draw.point(mdlIcon.settings(), 1)
-    addMenuText(image, "Settings")
+    draw.point(mdlIcon.led(), 1)
+    addMenuText(image, "Tog LED")
 
     return image
 

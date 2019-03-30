@@ -123,7 +123,10 @@ class LineFollow(threading.Thread):
                         control.stop = False
                         drive.HarDrive(control)
             else:
-                print("unable to find line")#drive.joltLeft()
+                control.angle = 0
+                control.speed = 0.3
+                control.stop = False
+                drive.HarDrive(control)
                 drive.stop()
 
 
@@ -265,13 +268,16 @@ class Nebula(threading.Thread):
 
                     #print(str(control.distance))
                     if control.distance < 100:
-                        control.angle = 180
-                        control.speed = 0.5
-                        control.stop = False
-                        drive.HarDrive(control)
-                        sleep(1)
-                        drive.stop()
-                        control.progress += 1
+                        if control.progress == 5:
+                            drive.stop()
+                        else:
+                            control.angle = 180
+                            control.speed = 0.5
+                            control.stop = False
+                            drive.HarDrive(control)
+                            sleep(1)
+                            drive.stop()
+                            control.progress += 1
                     else:
                         #print("control.neb")
                         print(str(width))

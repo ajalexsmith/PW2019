@@ -18,8 +18,14 @@ class Drive(threading.Thread):
             with ControllerResource() as joystick:
                 print('Found a joystick and connected')
                 while not self._stopevent.isSet():
-                    control.calcControl(round(joystick.rx, 2), round(joystick.ry, 2))
-                    drive.HarDrive(control)
+                    l1, r1 = joystick['l1','r1']
+                    if l1 is not None:
+                        drive.spinLeft()
+                    if r1 is not None:
+                        drive.spinRight()
+                    else:
+                        control.calcControl(round(joystick.rx, 2), round(joystick.ry, 2))
+                        drive.HarDrive(control)
 
 
 
