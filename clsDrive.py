@@ -190,14 +190,15 @@ class Control():
                 self.angle = 0
             self.speed = 1
 
-    def neb(self, x, y):
-        self.distance = self.TOF.get_distance()
-        print(str(self.distance))
-        if self.distance >= 100:
-            self.stop = False
-            self.DriveToTarget(x, y)
+    def neb(self, x, y, width):
+        if width > 150:
+            self.frame = 1
+        elif x <= 100:  # 125:
+            self.frame = 0
+        elif x >= 214:  # 189
+            self.frame = 2
         else:
-            self.stop = True
+            self.frame = 1
 
 
     def maze(self, x, y, width):

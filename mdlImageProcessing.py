@@ -249,7 +249,7 @@ class Nebula(threading.Thread):
         blocks = BlockArray(100)
         while not self._stopevent.isSet():
             count = pixy.ccc_get_blocks(100, blocks)
-            if count > 0 and self.progress < 6:
+            if count > 0 and control.progress < 6:
                 x = 0
                 y = 0
                 width = 0
@@ -261,16 +261,22 @@ class Nebula(threading.Thread):
                         x = curBlock.m_x
                         y = curBlock.m_y
                 if width > 0:
-                    if tof.get_distance() < 70:
+                    control.distance = tof.get_distance()
+
+                    #print(str(control.distance))
+                    if control.distance < 100:
                         control.angle = 180
                         control.speed = 0.5
                         control.stop = False
                         drive.HarDrive(control)
-                        sleep(1.5)
+                        sleep(1)
                         drive.stop()
                         control.progress += 1
                     else:
-                        control.neb(x, y)
+                        #print("control.neb")
+                        print(str(width))
+                        control.neb(x, y, width)
+                        #print(str(control.frame))
                         if control.frame == 2:
                             drive.joltRight()
                         elif control.frame == 0:
@@ -287,6 +293,7 @@ class Nebula(threading.Thread):
                 break
             else:
                 drive.joltLeft()
+        tof.close()
 
 
 
